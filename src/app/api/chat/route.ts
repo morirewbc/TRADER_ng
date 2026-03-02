@@ -381,8 +381,11 @@ export async function POST(req: NextRequest) {
           }));
 
           // Tool-calling loop — runs until the model stops requesting tools
+          let toolCallCount = 0;
+          const MAX_TOOL_CALLS = 5;
           let continueLoop = true;
           while (continueLoop) {
+            if (toolCallCount >= MAX_TOOL_CALLS) { send({ status: "tool:limit_reached" }); break; }
             const anthropicStream = await streamAnthropic(
               currentMessages,
               systemPrompt,
@@ -511,6 +514,7 @@ export async function POST(req: NextRequest) {
                 role: "user",
                 content: toolResults,
               });
+              toolCallCount++;
               // continueLoop stays true — we'll call the model again
             } else {
               // No more tools requested — exit the loop
@@ -534,8 +538,11 @@ export async function POST(req: NextRequest) {
             ...messages,
           ];
 
+          let toolCallCount = 0;
+          const MAX_TOOL_CALLS = 5;
           let continueLoop = true;
           while (continueLoop) {
+            if (toolCallCount >= MAX_TOOL_CALLS) { send({ status: "tool:limit_reached" }); break; }
             const client = new OpenAI({
               apiKey: apiKey || "ollama",
               ...(baseURL && { baseURL }),
@@ -653,6 +660,7 @@ export async function POST(req: NextRequest) {
                   content: toolResult,
                 });
               }
+              toolCallCount++;
               // continueLoop stays true — call the model again with tool results
             } else {
               // No more tools — exit loop

@@ -2,41 +2,9 @@ import { NextRequest } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { checkRateLimit } from "@/lib/security";
+import { loadProfiles, OHLCVBar } from "@/lib/data/historical";
 
-const PROFILES_FILE = join(process.cwd(), "data/ngx-historical/profiles.json");
-const RAW_DIR       = join(process.cwd(), "data/raw/historical");
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface TickerProfile {
-  ticker: string; name: string; board: string; from: string; to: string;
-  totalBars: number;
-  priceRange: { min: number; max: number; current: number };
-  atr14: { mean: number; p25: number; p75: number };
-  volatility: { dailyPct: number; annualPct: number };
-  volume: { mean: number; p25: number; p75: number };
-  seasonal: { strongMonths: string[]; weakMonths: string[] };
-  gapFrequency: number;
-}
-
-interface OHLCVBar {
-  date: string; open: number; high: number; low: number; close: number; volume: number;
-}
-
-// ─── In-memory profiles cache ──────────────────────────────────────────────────
-
-let profilesCache: Record<string, TickerProfile> | null = null;
-
-function loadProfiles(): Record<string, TickerProfile> | null {
-  if (profilesCache) return profilesCache;
-  if (!existsSync(PROFILES_FILE)) return null;
-  try {
-    profilesCache = JSON.parse(readFileSync(PROFILES_FILE, "utf-8"));
-    return profilesCache;
-  } catch {
-    return null;
-  }
-}
+const RAW_DIR = join(process.cwd(), "data/raw/historical");
 
 // ─── Period → from-date ────────────────────────────────────────────────────────
 

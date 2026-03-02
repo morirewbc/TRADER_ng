@@ -6,7 +6,7 @@ const RAW_DIR       = join(process.cwd(), "data/raw/historical");
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface TickerProfile {
+export interface TickerProfile {
   ticker: string; name: string; board: string; from: string; to: string;
   totalBars: number;
   priceRange: { min: number; max: number; current: number };
@@ -17,7 +17,7 @@ interface TickerProfile {
   gapFrequency: number;
 }
 
-interface OHLCVBar {
+export interface OHLCVBar {
   date: string; open: number; high: number; low: number; close: number; volume: number;
 }
 
@@ -38,7 +38,7 @@ type HistoricalResponse = { error: string } | HistoricalResult;
 
 let profilesCache: Record<string, TickerProfile> | null = null;
 
-function loadProfiles(): Record<string, TickerProfile> | null {
+export function loadProfiles(): Record<string, TickerProfile> | null {
   if (profilesCache) return profilesCache;
   if (!existsSync(PROFILES_FILE)) return null;
   try {

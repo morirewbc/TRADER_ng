@@ -130,7 +130,7 @@ function computeSeasonality(bars: OHLCVBar[]): { strongMonths: string[]; weakMon
   const monthReturns: number[][] = Array.from({ length: 12 }, () => []);
 
   for (let i = 1; i < bars.length; i++) {
-    const month = new Date(bars[i].date).getMonth();
+    const month = parseInt(bars[i].date.slice(5, 7), 10) - 1;
     if (bars[i - 1].close > 0) {
       const ret = (bars[i].close - bars[i - 1].close) / bars[i - 1].close;
       monthReturns[month].push(ret);
