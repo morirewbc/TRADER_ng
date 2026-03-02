@@ -243,48 +243,6 @@ async function streamAnthropic(
   return stream;
 }
 
-// ─── OpenAI Streaming ─────────────────────────────────────────────────────────
-
-async function streamOpenAI(
-  messages: ChatRequestBody["messages"],
-  systemPrompt: string,
-  apiKey: string,
-  model: string,
-  baseURL: string | undefined,
-  signal: AbortSignal,
-  includeUsage: boolean,
-) {
-  const client = new OpenAI({
-    apiKey: apiKey || "ollama",
-    ...(baseURL && { baseURL }),
-  });
-
-  const request: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
-    model,
-    stream: true,
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...messages,
-    ],
-    tools: tools_openai,
-  };
-
-  if (includeUsage) {
-    request.stream_options = { include_usage: true };
-  }
-
-  let stream;
-  try {
-    stream = await client.chat.completions.create(request, { signal });
-  } catch (err) {
-    if (!includeUsage) throw err;
-    // Some OpenAI-compatible providers reject stream_options. Retry without usage chunk support.
-    delete request.stream_options;
-    stream = await client.chat.completions.create(request, { signal });
-  }
-
-  return stream;
-}
 
 export async function POST(req: NextRequest) {
   // Rate limiting
