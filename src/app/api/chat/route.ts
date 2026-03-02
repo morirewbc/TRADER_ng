@@ -3,7 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { searchRAG } from "@/lib/rag";
 import { validatePineScript } from "@/lib/validator";
-import { reviewCode, fixCode } from "@/lib/ai/reviewer";
+import { reviewCodeWithUsage, fixCodeWithUsage } from "@/lib/ai/reviewer";
+import { buildUsageRecord, summarizeUsage } from "@/lib/ai/usage";
 import {
   checkRateLimit,
   validateProvider,
@@ -13,6 +14,8 @@ import {
   sanitizeCodeForPrompt,
   sanitizeProviderError,
 } from "@/lib/security";
+import { getNgxNews, getOpecNews } from "@/lib/data/live";
+import { getNgxHistorical } from "@/lib/data/historical";
 
 interface ChatRequestBody {
   messages: { role: "user" | "assistant"; content: string }[];
@@ -120,8 +123,105 @@ function extractCodeFromContent(content: string): string | null {
   return match ? match[1].trim() : null;
 }
 
+// ─── Tool Definitions ─────────────────────────────────────────────────────────
+
+const tools_anthropic: Anthropic.Tool[] = [
+  {
+    name: "get_ngx_news",
+    description:
+      "Fetch the latest news and corporate actions from the Nigerian Exchange Group (NGX). Use when the user asks for recent news, market updates, or context about NGX companies.",
+    input_schema: { type: "object", properties: {} },
+  },
+  {
+    name: "get_opec_news",
+    description:
+      "Fetch the latest OPEC press releases. Use when the user asks about oil prices, OPEC decisions, or energy sector news relevant to NGX:SEPLAT or NGX:TOTAL.",
+    input_schema: { type: "object", properties: {} },
+  },
+  {
+    name: "get_ngx_historical",
+    description:
+      "Fetch historical OHLCV data and statistical profile for a specific NGX stock. Use when generating strategies that require realistic ATR-based stops, volume filters, or backtesting parameters. Returns price range, ATR(14), volatility, volume percentiles, and seasonal patterns.",
+    input_schema: {
+      type: "object",
+      properties: {
+        ticker: {
+          type: "string",
+          description: "NGX ticker symbol e.g. DANGCEM, MTNN, ZENITHBANK",
+        },
+        period: {
+          type: "string",
+          enum: ["1y", "3y", "5y", "max"],
+          description: "Historical lookback period",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+];
+
+const tools_openai: OpenAI.ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_ngx_news",
+      description: "Fetch latest NGX news and corporate actions.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_opec_news",
+      description: "Fetch latest OPEC press releases.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_ngx_historical",
+      description:
+        "Fetch historical OHLCV data and stats for an NGX stock. Use for ATR-based stops, volume filters, and realistic strategy parameters.",
+      parameters: {
+        type: "object",
+        properties: {
+          ticker: { type: "string" },
+          period: { type: "string", enum: ["1y", "3y", "5y", "max"] },
+        },
+        required: ["ticker"],
+      },
+    },
+  },
+];
+
+// ─── Tool Executor ────────────────────────────────────────────────────────────
+
+async function executeTool(
+  name: string,
+  input: Record<string, unknown>,
+): Promise<string> {
+  if (name === "get_ngx_news") {
+    const result = await getNgxNews();
+    return JSON.stringify(result);
+  }
+  if (name === "get_opec_news") {
+    const result = await getOpecNews();
+    return JSON.stringify(result);
+  }
+  if (name === "get_ngx_historical") {
+    const ticker = (input.ticker as string | undefined) ?? "";
+    const period = (input.period as "1y" | "3y" | "5y" | "max" | undefined) ?? "5y";
+    const result = await getNgxHistorical(ticker, period);
+    return JSON.stringify(result);
+  }
+  return JSON.stringify({ error: `Unknown tool: ${name}` });
+}
+
+// ─── Anthropic Streaming ──────────────────────────────────────────────────────
+
 async function streamAnthropic(
-  messages: ChatRequestBody["messages"],
+  messages: Anthropic.MessageParam[],
   systemPrompt: string,
   apiKey: string,
   model: string,
@@ -134,13 +234,16 @@ async function streamAnthropic(
       model,
       max_tokens: 4096,
       system: systemPrompt,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      messages,
+      tools: tools_anthropic,
     },
     { signal },
   );
 
   return stream;
 }
+
+// ─── OpenAI Streaming ─────────────────────────────────────────────────────────
 
 async function streamOpenAI(
   messages: ChatRequestBody["messages"],
@@ -149,23 +252,36 @@ async function streamOpenAI(
   model: string,
   baseURL: string | undefined,
   signal: AbortSignal,
+  includeUsage: boolean,
 ) {
   const client = new OpenAI({
     apiKey: apiKey || "ollama",
     ...(baseURL && { baseURL }),
   });
 
-  const stream = await client.chat.completions.create(
-    {
-      model,
-      stream: true,
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...messages,
-      ],
-    },
-    { signal },
-  );
+  const request: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
+    model,
+    stream: true,
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...messages,
+    ],
+    tools: tools_openai,
+  };
+
+  if (includeUsage) {
+    request.stream_options = { include_usage: true };
+  }
+
+  let stream;
+  try {
+    stream = await client.chat.completions.create(request, { signal });
+  } catch (err) {
+    if (!includeUsage) throw err;
+    // Some OpenAI-compatible providers reject stream_options. Retry without usage chunk support.
+    delete request.stream_options;
+    stream = await client.chat.completions.create(request, { signal });
+  }
 
   return stream;
 }
@@ -286,23 +402,165 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       let fullContent = "";
+      const usageRecords: Awaited<ReturnType<typeof buildUsageRecord>>[] = [];
+      let generationUsage: {
+        inputTokens?: number | null;
+        outputTokens?: number | null;
+        totalTokens?: number | null;
+      } | null = null;
 
       const send = (data: Record<string, unknown>) => {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
       try {
-        // Phase 1: Stream the generation
+        // Phase 1: Tool-calling loop then streaming generation
         if (provider === "anthropic") {
-          const anthropicStream = await streamAnthropic(messages, systemPrompt, apiKey, model, signal);
+          // Build initial message list as Anthropic.MessageParam[]
+          const currentMessages: Anthropic.MessageParam[] = messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          }));
 
-          for await (const event of anthropicStream) {
-            if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-              fullContent += event.delta.text;
-              send({ text: event.delta.text });
+          // Tool-calling loop — runs until the model stops requesting tools
+          let continueLoop = true;
+          while (continueLoop) {
+            const anthropicStream = await streamAnthropic(
+              currentMessages,
+              systemPrompt,
+              apiKey,
+              model,
+              signal,
+            );
+
+            // Accumulate the full response so we can inspect stop_reason
+            let stopReason: string | null = null;
+            const assistantContentBlocks: Anthropic.ContentBlockParam[] = [];
+            let currentTextBlock = "";
+            const pendingToolUses: Array<{
+              id: string;
+              name: string;
+              input: Record<string, unknown>;
+            }> = [];
+            let currentToolCall: { id: string; name: string; inputJson: string } | null = null;
+
+            for await (const event of anthropicStream) {
+              const anyEvent = event as {
+                type: string;
+                message?: { usage?: { input_tokens?: number; output_tokens?: number }; stop_reason?: string };
+                usage?: { output_tokens?: number };
+                delta?: { type?: string; text?: string; stop_reason?: string; partial_json?: string };
+                content_block?: { type?: string; id?: string; name?: string };
+                index?: number;
+              };
+
+              if (anyEvent.type === "message_start") {
+                generationUsage = {
+                  inputTokens: anyEvent.message?.usage?.input_tokens ?? 0,
+                  outputTokens: anyEvent.message?.usage?.output_tokens ?? 0,
+                };
+              } else if (anyEvent.type === "message_delta") {
+                const prevUsage: { inputTokens: number; outputTokens: number } = {
+                  inputTokens: Number(generationUsage?.inputTokens ?? 0),
+                  outputTokens: Number(generationUsage?.outputTokens ?? 0),
+                };
+                generationUsage = {
+                  inputTokens: prevUsage.inputTokens,
+                  outputTokens: anyEvent.usage?.output_tokens ?? prevUsage.outputTokens ?? 0,
+                };
+                if (anyEvent.delta?.stop_reason) {
+                  stopReason = anyEvent.delta.stop_reason;
+                }
+              } else if (anyEvent.type === "message_stop") {
+                // final stop
+              } else if (anyEvent.type === "content_block_start") {
+                const block = anyEvent.content_block;
+                if (block?.type === "text") {
+                  currentTextBlock = "";
+                } else if (block?.type === "tool_use") {
+                  currentToolCall = {
+                    id: block.id ?? "",
+                    name: block.name ?? "",
+                    inputJson: "",
+                  };
+                }
+              } else if (anyEvent.type === "content_block_delta") {
+                if (anyEvent.delta?.type === "text_delta" && anyEvent.delta.text) {
+                  currentTextBlock += anyEvent.delta.text;
+                  fullContent += anyEvent.delta.text;
+                  send({ text: anyEvent.delta.text });
+                } else if (anyEvent.delta?.type === "input_json_delta" && currentToolCall) {
+                  currentToolCall.inputJson += anyEvent.delta.partial_json ?? "";
+                }
+              } else if (anyEvent.type === "content_block_stop") {
+                if (currentTextBlock) {
+                  assistantContentBlocks.push({ type: "text", text: currentTextBlock });
+                  currentTextBlock = "";
+                }
+                if (currentToolCall) {
+                  let parsedInput: Record<string, unknown> = {};
+                  try {
+                    parsedInput = JSON.parse(currentToolCall.inputJson || "{}");
+                  } catch {
+                    parsedInput = {};
+                  }
+                  pendingToolUses.push({
+                    id: currentToolCall.id,
+                    name: currentToolCall.name,
+                    input: parsedInput,
+                  });
+                  assistantContentBlocks.push({
+                    type: "tool_use",
+                    id: currentToolCall.id,
+                    name: currentToolCall.name,
+                    input: parsedInput,
+                  });
+                  currentToolCall = null;
+                }
+              }
+            }
+
+            // Check if we need to run tools
+            if (stopReason === "tool_use" && pendingToolUses.length > 0) {
+              // Add assistant message with tool use blocks
+              currentMessages.push({
+                role: "assistant",
+                content: assistantContentBlocks,
+              });
+
+              // Execute all tools and collect results
+              const toolResults: Anthropic.ToolResultBlockParam[] = [];
+              for (const toolUse of pendingToolUses) {
+                send({ status: `tool:${toolUse.name}` });
+                try {
+                  const result = await executeTool(toolUse.name, toolUse.input);
+                  toolResults.push({
+                    type: "tool_result",
+                    tool_use_id: toolUse.id,
+                    content: result,
+                  });
+                } catch (toolErr) {
+                  toolResults.push({
+                    type: "tool_result",
+                    tool_use_id: toolUse.id,
+                    content: JSON.stringify({ error: (toolErr as Error).message }),
+                  });
+                }
+              }
+
+              // Add tool results as a user message and continue the loop
+              currentMessages.push({
+                role: "user",
+                content: toolResults,
+              });
+              // continueLoop stays true — we'll call the model again
+            } else {
+              // No more tools requested — exit the loop
+              continueLoop = false;
             }
           }
         } else {
+          // OpenAI-compatible providers (openai, openrouter, google, ollama)
           const baseURL =
             provider === "openrouter"
               ? "https://openrouter.ai/api/v1"
@@ -311,15 +569,149 @@ export async function POST(req: NextRequest) {
               : provider === "ollama"
                 ? `${safeOllamaUrl}/v1`
                 : undefined;
-          const openaiStream = await streamOpenAI(messages, systemPrompt, apiKey, model, baseURL, signal);
 
-          for await (const chunk of openaiStream) {
-            const text = chunk.choices[0]?.delta?.content;
-            if (text) {
-              fullContent += text;
-              send({ text });
+          // Build mutable message list for tool-calling loop
+          const currentMessages: OpenAI.ChatCompletionMessageParam[] = [
+            { role: "system", content: systemPrompt },
+            ...messages,
+          ];
+
+          let continueLoop = true;
+          while (continueLoop) {
+            const client = new OpenAI({
+              apiKey: apiKey || "ollama",
+              ...(baseURL && { baseURL }),
+            });
+
+            const includeUsage = provider !== "ollama";
+            const request: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
+              model,
+              stream: true,
+              messages: currentMessages,
+              tools: tools_openai,
+            };
+
+            if (includeUsage) {
+              request.stream_options = { include_usage: true };
+            }
+
+            let openaiStream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
+            try {
+              openaiStream = await client.chat.completions.create(request, { signal });
+            } catch (err) {
+              if (!includeUsage) throw err;
+              delete request.stream_options;
+              openaiStream = await client.chat.completions.create(request, { signal });
+            }
+
+            // Accumulate streamed response
+            let assistantText = "";
+            const toolCallsMap = new Map<
+              number,
+              { id: string; name: string; arguments: string }
+            >();
+            let finishReason: string | null = null;
+
+            for await (const chunk of openaiStream) {
+              if (chunk.usage) {
+                generationUsage = {
+                  inputTokens: chunk.usage.prompt_tokens ?? 0,
+                  outputTokens: chunk.usage.completion_tokens ?? 0,
+                  totalTokens: chunk.usage.total_tokens ?? 0,
+                };
+              }
+
+              const choice = chunk.choices[0];
+              if (!choice) continue;
+
+              if (choice.finish_reason) {
+                finishReason = choice.finish_reason;
+              }
+
+              const delta = choice.delta;
+
+              if (delta.content) {
+                assistantText += delta.content;
+                fullContent += delta.content;
+                send({ text: delta.content });
+              }
+
+              // Accumulate tool call deltas
+              if (delta.tool_calls) {
+                for (const tc of delta.tool_calls) {
+                  const idx = tc.index;
+                  if (!toolCallsMap.has(idx)) {
+                    toolCallsMap.set(idx, {
+                      id: tc.id ?? "",
+                      name: tc.function?.name ?? "",
+                      arguments: "",
+                    });
+                  }
+                  const existing = toolCallsMap.get(idx)!;
+                  if (tc.id) existing.id = tc.id;
+                  if (tc.function?.name) existing.name = tc.function.name;
+                  if (tc.function?.arguments) existing.arguments += tc.function.arguments;
+                }
+              }
+            }
+
+            if (finishReason === "tool_calls" && toolCallsMap.size > 0) {
+              // Build the assistant message with tool calls
+              const toolCallsList = Array.from(toolCallsMap.entries())
+                .sort(([a], [b]) => a - b)
+                .map(([, tc]) => tc);
+
+              const assistantMsg: OpenAI.ChatCompletionAssistantMessageParam = {
+                role: "assistant",
+                content: assistantText || null,
+                tool_calls: toolCallsList.map((tc) => ({
+                  id: tc.id,
+                  type: "function" as const,
+                  function: { name: tc.name, arguments: tc.arguments },
+                })),
+              };
+              currentMessages.push(assistantMsg);
+
+              // Execute each tool
+              for (const tc of toolCallsList) {
+                send({ status: `tool:${tc.name}` });
+                let fnArgs: Record<string, unknown> = {};
+                try {
+                  fnArgs = JSON.parse(tc.arguments || "{}");
+                } catch {
+                  fnArgs = {};
+                }
+
+                let toolResult: string;
+                try {
+                  toolResult = await executeTool(tc.name, fnArgs);
+                } catch (toolErr) {
+                  toolResult = JSON.stringify({ error: (toolErr as Error).message });
+                }
+
+                currentMessages.push({
+                  role: "tool",
+                  tool_call_id: tc.id,
+                  content: toolResult,
+                });
+              }
+              // continueLoop stays true — call the model again with tool results
+            } else {
+              // No more tools — exit loop
+              continueLoop = false;
             }
           }
+        }
+
+        if (generationUsage) {
+          usageRecords.push(
+            await buildUsageRecord({
+              stage: "generation",
+              provider,
+              model,
+              usage: generationUsage,
+            }),
+          );
         }
 
         // Phase 2: Post-generation validation pipeline
@@ -346,18 +738,28 @@ export async function POST(req: NextRequest) {
             // Step 2: AI review (only if static passes)
             send({ status: "reviewing" });
             try {
-              const reviewResult = await reviewCode(
+              const { result: reviewResult, usage: reviewUsage } = await reviewCodeWithUsage(
                 generatedCode,
                 provider,
                 apiKey,
                 model,
                 safeOllamaUrl,
               );
+              if (reviewUsage) {
+                usageRecords.push(
+                  await buildUsageRecord({
+                    stage: "review",
+                    provider,
+                    model,
+                    usage: reviewUsage,
+                  }),
+                );
+              }
 
               if (reviewResult.verdict === "needs_fix" && reviewResult.issues.length > 0) {
                 // Step 3: Auto-fix
                 send({ status: "correcting" });
-                const fixedCode = await fixCode(
+                const { fixedCode, usage: fixUsage } = await fixCodeWithUsage(
                   generatedCode,
                   reviewResult.issues,
                   provider,
@@ -365,6 +767,16 @@ export async function POST(req: NextRequest) {
                   model,
                   safeOllamaUrl,
                 );
+                if (fixUsage) {
+                  usageRecords.push(
+                    await buildUsageRecord({
+                      stage: "fix",
+                      provider,
+                      model,
+                      usage: fixUsage,
+                    }),
+                  );
+                }
 
                 if (fixedCode) {
                   // Re-validate fixed code (static only, no more LLM calls)
@@ -409,6 +821,12 @@ export async function POST(req: NextRequest) {
             // Static validation found errors — skip AI review, report immediately
             send({ validation: allStaticResults });
           }
+        }
+
+        if (usageRecords.length > 0) {
+          const usageSummary = summarizeUsage(usageRecords);
+          send({ usage: usageSummary });
+          console.info("[api/chat] usage", JSON.stringify(usageSummary));
         }
 
         send({ text: "" }); // flush
