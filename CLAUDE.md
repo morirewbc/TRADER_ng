@@ -48,6 +48,10 @@ Three layers run after every code generation:
 - npm over pnpm — simpler for open source contributors
 - localStorage for settings — no database needed for BYOK
 - BM25 over vector embeddings — zero dependencies, fast enough for <1200 documents
+- investing.com HistoricalDataAjax endpoint for NGX OHLCV data (back to 1996 where available)
+- Per-ticker ATR14/volatility/volume profiles stored as BM25 RAG chunks for realistic strategy generation
+- get_ngx_historical tool gives AI precise bar data + stats during generation for backtesting-aware parameter suggestions
+- Tool calling loop (recursive do-while) handles get_ngx_news, get_opec_news, get_ngx_historical for both Anthropic and OpenAI paths
 
 ## PineScript Knowledge
 - System prompt includes v6 pitfalls + RAG-injected exact signatures
@@ -94,4 +98,20 @@ src/
       rules/limits.ts     — TradingView limit checks
     ai/
       reviewer.ts         — AI code review + auto-correction
+scripts/
+  discover-ngx-pairs.ts   — Scrapes investing.com to build NGX ticker → pair_id map
+  fetch-historical.ts     — Batch-fetches OHLCV bars via HistoricalDataAjax endpoint
+  process-historical.ts   — Computes per-ticker stats + appends historical chunks to BM25 index
+data/
+  raw/historical/         — Raw OHLCV JSON per ticker (gitignored). pair-ids.json committed.
+  ngx-historical/
+    profiles.json         — Per-ticker statistical profiles (committed)
+src/
+  lib/
+    data/
+      live.ts             — getNgxNews() + getOpecNews() for tool calling
+      historical.ts       — getNgxHistorical() for tool calling
+  app/
+    api/
+      ngx/historical/route.ts — GET /api/ngx/historical?ticker=&period=
 ```
