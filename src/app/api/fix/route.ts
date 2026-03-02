@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { fixCode } from "@/lib/ai/reviewer";
+import { fixCodeWithUsage } from "@/lib/ai/reviewer";
+import { buildUsageRecord, summarizeUsage } from "@/lib/ai/usage";
 import { validatePineScript } from "@/lib/validator";
 import type { ValidationResult } from "@/lib/types";
 import {
@@ -83,7 +84,14 @@ export async function POST(req: NextRequest) {
   }));
 
   try {
-    const fixedCode = await fixCode(code, issues, provider, apiKey, model, safeOllamaUrl);
+    const { fixedCode, usage: fixUsage } = await fixCodeWithUsage(
+      code,
+      issues,
+      provider,
+      apiKey,
+      model,
+      safeOllamaUrl,
+    );
 
     if (!fixedCode) {
       return Response.json({ error: "Failed to generate fix" }, { status: 500 });
@@ -102,7 +110,19 @@ export async function POST(req: NextRequest) {
 
     const validation = [...staticValidation, ...transpilerResults];
 
-    return Response.json({ fixedCode, validation });
+    let usage = null;
+    if (fixUsage) {
+      const record = await buildUsageRecord({
+        stage: "fix",
+        provider,
+        model,
+        usage: fixUsage,
+      });
+      usage = summarizeUsage([record]);
+      console.info("[api/fix] usage", JSON.stringify(usage));
+    }
+
+    return Response.json({ fixedCode, validation, usage });
   } catch (err) {
     return Response.json(
       { error: sanitizeProviderError(err) },

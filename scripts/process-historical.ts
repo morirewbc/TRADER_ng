@@ -185,13 +185,15 @@ function computeProfile(history: TickerHistory): TickerProfile {
     annualPct: round2(dailyStdDev * Math.sqrt(252) * 100),
   };
 
-  // Volume percentiles
+  // Volume percentiles (may be 0 when source is close-only)
   const volumes = bars.map((b) => b.volume).filter((v) => v > 0).sort((a, b) => a - b);
-  const volume = {
-    mean: Math.round(volumes.reduce((a, b) => a + b, 0) / volumes.length),
-    p25:  Math.round(percentile(volumes, 25)),
-    p75:  Math.round(percentile(volumes, 75)),
-  };
+  const volume = volumes.length > 0
+    ? {
+        mean: Math.round(volumes.reduce((a, b) => a + b, 0) / volumes.length),
+        p25:  Math.round(percentile(volumes, 25)),
+        p75:  Math.round(percentile(volumes, 75)),
+      }
+    : { mean: 0, p25: 0, p75: 0 };
 
   // Seasonality
   const seasonal = computeSeasonality(bars);
@@ -262,17 +264,20 @@ function profileToChunk(p: TickerProfile): DocChunk {
     : n >= 1_000   ? `${(n / 1_000).toFixed(0)}K`
     : String(n);
 
-  const content = [
+  const lines = [
     `NGX Historical Profile — ${p.ticker} (${p.name}, ${p.board} Board)`,
     `Data: ${p.from.slice(0, 4)}–${p.to.slice(0, 4)} | ${p.totalBars} trading days`,
     `Price range: ₦${p.priceRange.min.toLocaleString()}–₦${p.priceRange.max.toLocaleString()} | Current: ₦${p.priceRange.current.toLocaleString()}`,
     `ATR(14): mean ₦${p.atr14.mean} | typical ₦${p.atr14.p25}–₦${p.atr14.p75}`,
     `Daily volatility: ${p.volatility.dailyPct}% | Annual: ${p.volatility.annualPct}%`,
-    `Avg daily volume: ${fmtVol(p.volume.mean)} shares | IQR: ${fmtVol(p.volume.p25)}–${fmtVol(p.volume.p75)}`,
+    p.volume.mean > 0
+      ? `Avg daily volume: ${fmtVol(p.volume.mean)} shares | IQR: ${fmtVol(p.volume.p25)}–${fmtVol(p.volume.p75)}`
+      : `Volume: not available (close-price only source)`,
     `Strong months: ${p.seasonal.strongMonths.join(", ")} | Weak: ${p.seasonal.weakMonths.join(", ")}`,
-    `Gap opens >2%: ${(p.gapFrequency * 100).toFixed(1)}% of sessions`,
+    `Large daily moves >2%: ${(p.gapFrequency * 100).toFixed(1)}% of sessions`,
     `Recommended ATR stop multiplier: ${p.volatility.dailyPct > 2.5 ? "1.5–2.0×" : "2.0–2.5×"} ATR(14)`,
-  ].join("\n");
+  ];
+  const content = lines.join("\n");
 
   return {
     id:       `doc-ngx-hist-${p.ticker.toLowerCase()}`,

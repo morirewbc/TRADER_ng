@@ -1,7 +1,14 @@
 "use client";
 
 import { useReducer, useCallback, useRef } from "react";
-import type { ChatState, Message, StreamStatus, Settings, ValidationResult } from "@/lib/types";
+import type {
+  ChatState,
+  Message,
+  StreamStatus,
+  Settings,
+  ValidationResult,
+  UsageSummary,
+} from "@/lib/types";
 
 // Actions
 type Action =
@@ -11,6 +18,7 @@ type Action =
   | { type: "SET_STREAM_STATUS"; status: StreamStatus }
   | { type: "SET_ERROR"; error: string }
   | { type: "SET_VALIDATION"; results: ValidationResult[]; correctedCode: string | null }
+  | { type: "SET_USAGE"; usage: UsageSummary | null }
   | { type: "CLEAR_ERROR" }
   | { type: "RESET" };
 
@@ -23,6 +31,7 @@ const initialState: ChatState = {
   error: null,
   validationResults: [],
   correctedCode: null,
+  usageSummary: null,
 };
 
 function reducer(state: ChatState, action: Action): ChatState {
@@ -53,6 +62,8 @@ function reducer(state: ChatState, action: Action): ChatState {
         validationResults: action.results,
         correctedCode: action.correctedCode,
       };
+    case "SET_USAGE":
+      return { ...state, usageSummary: action.usage };
     case "CLEAR_ERROR":
       return { ...state, error: null, streamStatus: "idle" };
     case "RESET":
@@ -124,6 +135,7 @@ export function useChat() {
     dispatch({ type: "SET_STREAM_STATUS", status: "connecting" });
     // Clear previous validation when starting new generation
     dispatch({ type: "SET_VALIDATION", results: [], correctedCode: null });
+    dispatch({ type: "SET_USAGE", usage: null });
 
     try {
       const allMessages = [...state.messages, userMsg].map((m) => ({
@@ -221,6 +233,13 @@ export function useChat() {
               continue;
             }
 
+            if (parsed.usage) {
+              // Expose precise token/cost data from API for debugging and cost tracking.
+              console.info("[chat usage]", parsed.usage);
+              dispatch({ type: "SET_USAGE", usage: parsed.usage as UsageSummary });
+              continue;
+            }
+
             if (parsed.text) {
               fullContent += parsed.text;
               dispatch({ type: "UPDATE_ASSISTANT", content: fullContent });
@@ -300,7 +319,12 @@ export function useChat() {
         return;
       }
 
-      const { fixedCode: fixed, validation } = await res.json();
+      const { fixedCode: fixed, validation, usage } = await res.json();
+
+      if (usage) {
+        console.info("[fix usage]", usage);
+        dispatch({ type: "SET_USAGE", usage: usage as UsageSummary });
+      }
 
       if (fixed) {
         const titleMatch = fixed.match(
@@ -335,6 +359,7 @@ export function useChat() {
   const clearCode = useCallback(() => {
     dispatch({ type: "SET_CODE", code: "", title: "" });
     dispatch({ type: "SET_VALIDATION", results: [], correctedCode: null });
+    dispatch({ type: "SET_USAGE", usage: null });
   }, []);
 
   const updateCode = useCallback((code: string) => {

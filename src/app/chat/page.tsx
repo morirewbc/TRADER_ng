@@ -45,6 +45,7 @@ export default function ChatPage() {
     error,
     validationResults,
     correctedCode,
+    usageSummary,
     sendMessage,
     fixCode,
     clearCode,
@@ -178,6 +179,7 @@ export default function ChatPage() {
               onClear={clearCode}
               validationResults={validationResults}
               correctedCode={correctedCode}
+              usageSummary={usageSummary}
               streamStatus={streamStatus}
               onFix={fixCode}
             />

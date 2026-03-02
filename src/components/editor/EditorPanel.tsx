@@ -9,7 +9,7 @@ import { Copy, Check, Save, Download, Trash2 } from "lucide-react";
 import { pineScriptLanguage } from "./pine-language";
 import { pineTheme, pineHighlight } from "./codemirror-theme";
 import ValidationPanel from "./ValidationPanel";
-import type { PineVersion, ValidationResult, StreamStatus } from "@/lib/types";
+import type { PineVersion, UsageSummary, ValidationResult, StreamStatus } from "@/lib/types";
 
 interface EditorPanelProps {
   code: string;
@@ -19,6 +19,7 @@ interface EditorPanelProps {
   onClear: () => void;
   validationResults?: ValidationResult[];
   correctedCode?: string | null;
+  usageSummary?: UsageSummary | null;
   streamStatus?: StreamStatus;
   onFix?: () => void;
 }
@@ -31,6 +32,7 @@ export default function EditorPanel({
   onClear,
   validationResults = [],
   correctedCode = null,
+  usageSummary = null,
   streamStatus,
   onFix,
 }: EditorPanelProps) {
@@ -182,6 +184,7 @@ export default function EditorPanel({
       <ValidationPanel
         results={validationResults}
         correctedCode={correctedCode}
+        usageSummary={usageSummary}
         streamStatus={streamStatus}
         onFix={onFix}
       />

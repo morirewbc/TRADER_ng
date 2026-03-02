@@ -13,12 +13,14 @@ import {
   BrainCircuit,
   FileCode2,
   LoaderCircle,
+  Coins,
 } from "lucide-react";
-import type { ValidationResult, StreamStatus } from "@/lib/types";
+import type { ValidationResult, StreamStatus, UsageSummary } from "@/lib/types";
 
 interface ValidationPanelProps {
   results: ValidationResult[];
   correctedCode: string | null;
+  usageSummary?: UsageSummary | null;
   streamStatus?: StreamStatus;
   onFix?: () => void;
 }
@@ -111,6 +113,7 @@ function PipelineStepper({ status }: { status: StreamStatus }) {
 export default function ValidationPanel({
   results,
   correctedCode,
+  usageSummary = null,
   streamStatus,
   onFix,
 }: ValidationPanelProps) {
@@ -129,6 +132,9 @@ export default function ValidationPanel({
   const errors = results.filter((r) => r.status === "error").length;
   const nonPassResults = results.filter((r) => r.status !== "pass");
   const hasFixableErrors = errors > 0 || warnings > 0;
+  const totalUsd = usageSummary?.totals.totalCostUsd ?? 0;
+  const totalTokens = usageSummary?.totals.totalTokens ?? 0;
+  const hasUsage = Boolean(usageSummary && totalTokens > 0);
 
   return (
     <div className="border-t border-border bg-surface">
@@ -178,6 +184,25 @@ export default function ValidationPanel({
       {/* Pipeline stepper — shown while validating */}
       {expanded && isValidating && streamStatus && (
         <PipelineStepper status={streamStatus} />
+      )}
+
+      {/* Usage summary */}
+      {expanded && !isValidating && hasUsage && usageSummary && (
+        <div className="px-4 pb-2">
+          <div className="flex items-center gap-2 py-1.5 text-xs text-text-secondary">
+            <Coins size={12} className="text-primary" />
+            <span className="font-medium">
+              {totalTokens.toLocaleString()} tokens
+            </span>
+            <span className="text-text-dim">·</span>
+            <span className="font-medium">${totalUsd.toFixed(6)}</span>
+            {usageSummary.unpricedStages.length > 0 && (
+              <span className="text-text-dim">
+                (partial pricing)
+              </span>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Results */}

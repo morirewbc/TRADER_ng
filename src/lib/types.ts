@@ -37,6 +37,39 @@ export interface ValidationResult {
   suggestion?: string;
 }
 
+export interface UsageCost {
+  inputPer1M: number;
+  outputPer1M: number;
+  inputCostUsd: number;
+  outputCostUsd: number;
+  totalCostUsd: number;
+  source: "openrouter-live" | "ollama-local";
+}
+
+export interface UsageRecord {
+  stage: "generation" | "review" | "fix";
+  provider: string;
+  model: string;
+  tokens: {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+  };
+  cost: UsageCost | null;
+}
+
+export interface UsageSummary {
+  records: UsageRecord[];
+  totals: {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    totalCostUsd: number;
+  };
+  pricedStages: number;
+  unpricedStages: Array<UsageRecord["stage"]>;
+}
+
 export interface ChatState {
   messages: Message[];
   currentCode: string;
@@ -46,6 +79,7 @@ export interface ChatState {
   error: string | null;
   validationResults: ValidationResult[];
   correctedCode: string | null;
+  usageSummary: UsageSummary | null;
 }
 
 export const DEFAULT_SETTINGS: Settings = {

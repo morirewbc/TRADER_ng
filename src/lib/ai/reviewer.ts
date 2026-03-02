@@ -13,6 +13,12 @@ export interface ReviewResult {
   verdict: "pass" | "needs_fix";
 }
 
+export interface LlmUsage {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
 const REVIEW_PROMPT = `You are a PineScript v6 code reviewer. Analyze the code for:
 1. Type errors (wrong qualifiers, implicit casts)
 2. Runtime errors (division by zero, array out of bounds, na propagation)
@@ -42,7 +48,21 @@ async function callLLM(
   apiKey: string,
   model: string,
   ollamaUrl?: string,
-): Promise<string> {
+): Promise<{ text: string; usage: LlmUsage | null }> {
+  const normalizeUsage = (
+    inputTokens: number | null | undefined,
+    outputTokens: number | null | undefined,
+  ): LlmUsage | null => {
+    const input = Math.max(0, Number(inputTokens || 0));
+    const output = Math.max(0, Number(outputTokens || 0));
+    if (input === 0 && output === 0) return null;
+    return {
+      inputTokens: input,
+      outputTokens: output,
+      totalTokens: input + output,
+    };
+  };
+
   if (provider === "anthropic") {
     const client = new Anthropic({ apiKey });
     const response = await client.messages.create({
@@ -51,7 +71,12 @@ async function callLLM(
       system: prompt,
       messages: [{ role: "user", content: userContent }],
     });
-    return response.content[0].type === "text" ? response.content[0].text : "";
+    const text = response.content[0].type === "text" ? response.content[0].text : "";
+    const usage = normalizeUsage(
+      response.usage?.input_tokens,
+      response.usage?.output_tokens,
+    );
+    return { text, usage };
   }
 
   // OpenAI, Google, or Ollama
@@ -77,7 +102,11 @@ async function callLLM(
     ],
   });
 
-  return response.choices[0]?.message?.content || "";
+  const usage = normalizeUsage(
+    response.usage?.prompt_tokens,
+    response.usage?.completion_tokens,
+  );
+  return { text: response.choices[0]?.message?.content || "", usage };
 }
 
 function parseReviewResponse(text: string): ReviewResult {
@@ -133,6 +162,17 @@ export async function reviewCode(
   model: string,
   ollamaUrl?: string,
 ): Promise<ReviewResult> {
+  const { result } = await reviewCodeWithUsage(code, provider, apiKey, model, ollamaUrl);
+  return result;
+}
+
+export async function reviewCodeWithUsage(
+  code: string,
+  provider: string,
+  apiKey: string,
+  model: string,
+  ollamaUrl?: string,
+): Promise<{ result: ReviewResult; usage: LlmUsage | null }> {
   try {
     // Wrap the code in XML tags so any LLM instructions embedded in the code
     // are clearly delimited as data, not as prompt instructions.
@@ -145,10 +185,16 @@ export async function reviewCode(
       model,
       ollamaUrl,
     );
-    return parseReviewResponse(response);
+    return {
+      result: parseReviewResponse(response.text),
+      usage: response.usage,
+    };
   } catch (err) {
     console.error("AI review failed:", err);
-    return { issues: [], verdict: "pass" };
+    return {
+      result: { issues: [], verdict: "pass" },
+      usage: null,
+    };
   }
 }
 
@@ -160,6 +206,25 @@ export async function fixCode(
   model: string,
   ollamaUrl?: string,
 ): Promise<string | null> {
+  const { fixedCode } = await fixCodeWithUsage(
+    code,
+    issues,
+    provider,
+    apiKey,
+    model,
+    ollamaUrl,
+  );
+  return fixedCode;
+}
+
+export async function fixCodeWithUsage(
+  code: string,
+  issues: ReviewIssue[],
+  provider: string,
+  apiKey: string,
+  model: string,
+  ollamaUrl?: string,
+): Promise<{ fixedCode: string | null; usage: LlmUsage | null }> {
   const issueList = issues
     .map(
       (i) =>
@@ -181,9 +246,15 @@ export async function fixCode(
       model,
       ollamaUrl,
     );
-    return extractCodeFromResponse(response);
+    return {
+      fixedCode: extractCodeFromResponse(response.text),
+      usage: response.usage,
+    };
   } catch (err) {
     console.error("AI fix failed:", err);
-    return null;
+    return {
+      fixedCode: null,
+      usage: null,
+    };
   }
 }

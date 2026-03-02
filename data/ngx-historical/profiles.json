@@ -1,0 +1,1362 @@
+{
+  "ACCESS": {
+    "ticker": "ACCESS",
+    "name": "Access Corporation",
+    "board": "Premium",
+    "from": "2022-03-28",
+    "to": "2026-02-02",
+    "totalBars": 952,
+    "priceRange": {
+      "min": 7.5,
+      "max": 30,
+      "current": 22.75
+    },
+    "atr14": {
+      "mean": 0.53,
+      "p25": 0.21,
+      "p75": 0.73
+    },
+    "volatility": {
+      "dailyPct": 2.67,
+      "annualPct": 42.46
+    },
+    "volume": {
+      "mean": 36470612,
+      "p25": 11507500,
+      "p75": 42042500
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jun",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Feb",
+        "Apr"
+      ]
+    },
+    "gapFrequency": 0.02
+  },
+  "AIRTELAFRI": {
+    "ticker": "AIRTELAFRI",
+    "name": "Airtel Africa",
+    "board": "Premium",
+    "from": "2019-07-09",
+    "to": "2026-02-02",
+    "totalBars": 1611,
+    "priceRange": {
+      "min": 283.5,
+      "max": 2372.5,
+      "current": 2270
+    },
+    "atr14": {
+      "mean": 80.66,
+      "p25": 18.58,
+      "p75": 110.77
+    },
+    "volatility": {
+      "dailyPct": 1.76,
+      "annualPct": 28
+    },
+    "volume": {
+      "mean": 86908,
+      "p25": 360,
+      "p75": 30075
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Nov",
+        "Dec",
+        "Jan"
+      ],
+      "weakMonths": [
+        "Sep",
+        "Apr",
+        "Jun"
+      ]
+    },
+    "gapFrequency": 0
+  },
+  "ARDOVA": {
+    "ticker": "ARDOVA",
+    "name": "ARDOVA",
+    "board": "Main",
+    "from": "2016-03-03",
+    "to": "2023-07-25",
+    "totalBars": 1825,
+    "priceRange": {
+      "min": 9.55,
+      "max": 293.23,
+      "current": 16.5
+    },
+    "atr14": {
+      "mean": 0.79,
+      "p25": 0.14,
+      "p75": 0.83
+    },
+    "volatility": {
+      "dailyPct": 3.54,
+      "annualPct": 56.24
+    },
+    "volume": {
+      "mean": 0,
+      "p25": 0,
+      "p75": 0
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Dec",
+        "Jan",
+        "May"
+      ],
+      "weakMonths": [
+        "Aug",
+        "Nov",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.27
+  },
+  "BUACEMENT": {
+    "ticker": "BUACEMENT",
+    "name": "BUA Cement",
+    "board": "Premium",
+    "from": "2020-01-12",
+    "to": "2026-02-02",
+    "totalBars": 1495,
+    "priceRange": {
+      "min": 29.4,
+      "max": 185,
+      "current": 183
+    },
+    "atr14": {
+      "mean": 5.35,
+      "p25": 1.6,
+      "p75": 7.24
+    },
+    "volatility": {
+      "dailyPct": 2.2,
+      "annualPct": 34.97
+    },
+    "volume": {
+      "mean": 890026,
+      "p25": 49290,
+      "p75": 548280
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Oct",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Aug",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.01
+  },
+  "BUAFOODS": {
+    "ticker": "BUAFOODS",
+    "name": "BUA Foods",
+    "board": "Premium",
+    "from": "2022-01-05",
+    "to": "2026-02-02",
+    "totalBars": 1010,
+    "priceRange": {
+      "min": 48.4,
+      "max": 798.9,
+      "current": 798.9
+    },
+    "atr14": {
+      "mean": 9.65,
+      "p25": 2.69,
+      "p75": 13.22
+    },
+    "volatility": {
+      "dailyPct": 1.75,
+      "annualPct": 27.75
+    },
+    "volume": {
+      "mean": 670926,
+      "p25": 7698,
+      "p75": 125440
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Aug",
+        "Feb"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Jun",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0
+  },
+  "CADBURY": {
+    "ticker": "CADBURY",
+    "name": "Cadbury Nigeria",
+    "board": "Main",
+    "from": "2012-03-12",
+    "to": "2026-02-02",
+    "totalBars": 3270,
+    "priceRange": {
+      "min": 4.95,
+      "max": 102.83,
+      "current": 64
+    },
+    "atr14": {
+      "mean": 3.04,
+      "p25": 0.66,
+      "p75": 3.26
+    },
+    "volatility": {
+      "dailyPct": 3.33,
+      "annualPct": 52.89
+    },
+    "volume": {
+      "mean": 588003,
+      "p25": 92920,
+      "p75": 535510
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Apr",
+        "Nov"
+      ],
+      "weakMonths": [
+        "Aug",
+        "Feb",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0.21
+  },
+  "CONOIL": {
+    "ticker": "CONOIL",
+    "name": "Conoil",
+    "board": "Main",
+    "from": "2012-04-11",
+    "to": "2026-02-02",
+    "totalBars": 3026,
+    "priceRange": {
+      "min": 13.15,
+      "max": 387.2,
+      "current": 169
+    },
+    "atr14": {
+      "mean": 6.79,
+      "p25": 1.81,
+      "p75": 9.42
+    },
+    "volatility": {
+      "dailyPct": 3.1,
+      "annualPct": 49.25
+    },
+    "volume": {
+      "mean": 142634,
+      "p25": 15105,
+      "p75": 124840
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Nov",
+        "Oct"
+      ],
+      "weakMonths": [
+        "Feb",
+        "Mar",
+        "Aug"
+      ]
+    },
+    "gapFrequency": 0.18
+  },
+  "DANGCEM": {
+    "ticker": "DANGCEM",
+    "name": "Dangote Cement",
+    "board": "Premium",
+    "from": "2010-10-25",
+    "to": "2026-02-02",
+    "totalBars": 3778,
+    "priceRange": {
+      "min": 86.36,
+      "max": 763,
+      "current": 644
+    },
+    "atr14": {
+      "mean": 4.09,
+      "p25": 1.19,
+      "p75": 3.89
+    },
+    "volatility": {
+      "dailyPct": 2.01,
+      "annualPct": 31.93
+    },
+    "volume": {
+      "mean": 1422409,
+      "p25": 81960,
+      "p75": 852110
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Dec",
+        "Jul"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Nov",
+        "Aug"
+      ]
+    },
+    "gapFrequency": 0.11
+  },
+  "DANGSUGAR": {
+    "ticker": "DANGSUGAR",
+    "name": "Dangote Sugar",
+    "board": "Premium",
+    "from": "2012-03-25",
+    "to": "2026-02-02",
+    "totalBars": 3427,
+    "priceRange": {
+      "min": 3.26,
+      "max": 82.65,
+      "current": 65
+    },
+    "atr14": {
+      "mean": 1.06,
+      "p25": 0.26,
+      "p75": 1.17
+    },
+    "volatility": {
+      "dailyPct": 2.93,
+      "annualPct": 46.59
+    },
+    "volume": {
+      "mean": 3052696,
+      "p25": 604485,
+      "p75": 3180000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "May",
+        "Jun"
+      ],
+      "weakMonths": [
+        "Apr",
+        "Mar",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.17
+  },
+  "ETI": {
+    "ticker": "ETI",
+    "name": "ETI",
+    "board": "Main",
+    "from": "2012-01-24",
+    "to": "2026-02-02",
+    "totalBars": 3460,
+    "priceRange": {
+      "min": 3.9,
+      "max": 50,
+      "current": 44
+    },
+    "atr14": {
+      "mean": 0.88,
+      "p25": 0.29,
+      "p75": 0.89
+    },
+    "volatility": {
+      "dailyPct": 2.93,
+      "annualPct": 46.54
+    },
+    "volume": {
+      "mean": 5778051,
+      "p25": 361810,
+      "p75": 3455000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "May",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Jul",
+        "Feb",
+        "Mar"
+      ]
+    },
+    "gapFrequency": 0.16
+  },
+  "FBNH": {
+    "ticker": "FBNH",
+    "name": "FBN Holdings",
+    "board": "Premium",
+    "from": "2012-01-30",
+    "to": "2026-02-02",
+    "totalBars": 3463,
+    "priceRange": {
+      "min": 2.95,
+      "max": 53,
+      "current": 44.35
+    },
+    "atr14": {
+      "mean": 0.42,
+      "p25": 0.2,
+      "p75": 0.44
+    },
+    "volatility": {
+      "dailyPct": 2.93,
+      "annualPct": 46.46
+    },
+    "volume": {
+      "mean": 25999588,
+      "p25": 7370000,
+      "p75": 26990000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Dec",
+        "Nov"
+      ],
+      "weakMonths": [
+        "Apr",
+        "Feb",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0.1
+  },
+  "FCMB": {
+    "ticker": "FCMB",
+    "name": "FCMB Group",
+    "board": "Main",
+    "from": "2012-03-25",
+    "to": "2026-02-02",
+    "totalBars": 3426,
+    "priceRange": {
+      "min": 0.71,
+      "max": 12.1,
+      "current": 11.25
+    },
+    "atr14": {
+      "mean": 0.15,
+      "p25": 0.08,
+      "p75": 0.18
+    },
+    "volatility": {
+      "dailyPct": 3.08,
+      "annualPct": 48.82
+    },
+    "volume": {
+      "mean": 15299412,
+      "p25": 2340000,
+      "p75": 13760000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Dec",
+        "May"
+      ],
+      "weakMonths": [
+        "Nov",
+        "Aug",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.21
+  },
+  "FIDELITYBK": {
+    "ticker": "FIDELITYBK",
+    "name": "FIDELITYBK",
+    "board": "Main",
+    "from": "2012-01-03",
+    "to": "2026-02-02",
+    "totalBars": 3483,
+    "priceRange": {
+      "min": 0.76,
+      "max": 21.7,
+      "current": 18
+    },
+    "atr14": {
+      "mean": 0.16,
+      "p25": 0.05,
+      "p75": 0.15
+    },
+    "volatility": {
+      "dailyPct": 2.97,
+      "annualPct": 47.21
+    },
+    "volume": {
+      "mean": 18240967,
+      "p25": 4840000,
+      "p75": 18720000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Dec",
+        "Sep"
+      ],
+      "weakMonths": [
+        "Apr",
+        "Aug",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.17
+  },
+  "FLOURMILL": {
+    "ticker": "FLOURMILL",
+    "name": "Flour Mills of Nigeria",
+    "board": "Premium",
+    "from": "2016-03-03",
+    "to": "2024-12-27",
+    "totalBars": 2181,
+    "priceRange": {
+      "min": 12.8,
+      "max": 81.8,
+      "current": 81.8
+    },
+    "atr14": {
+      "mean": 0.37,
+      "p25": 0.18,
+      "p75": 0.49
+    },
+    "volatility": {
+      "dailyPct": 2.6,
+      "annualPct": 41.29
+    },
+    "volume": {
+      "mean": 0,
+      "p25": 0,
+      "p75": 0
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Nov",
+        "Jan",
+        "Sep"
+      ],
+      "weakMonths": [
+        "Apr",
+        "Feb",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0.24
+  },
+  "GTCO": {
+    "ticker": "GTCO",
+    "name": "GTCO Holdings",
+    "board": "Premium",
+    "from": "2012-02-07",
+    "to": "2026-02-02",
+    "totalBars": 3459,
+    "priceRange": {
+      "min": 13.37,
+      "max": 101.95,
+      "current": 99.5
+    },
+    "atr14": {
+      "mean": 0.75,
+      "p25": 0.45,
+      "p75": 0.87
+    },
+    "volatility": {
+      "dailyPct": 2.26,
+      "annualPct": 35.85
+    },
+    "volume": {
+      "mean": 21110469,
+      "p25": 8030000,
+      "p75": 25740000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Jun",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Oct",
+        "Mar",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.08
+  },
+  "GUINNESS": {
+    "ticker": "GUINNESS",
+    "name": "GUINNESS",
+    "board": "Main",
+    "from": "2016-03-03",
+    "to": "2026-02-27",
+    "totalBars": 2471,
+    "priceRange": {
+      "min": 13,
+      "max": 350,
+      "current": 350
+    },
+    "atr14": {
+      "mean": 0.72,
+      "p25": 0.25,
+      "p75": 0.89
+    },
+    "volatility": {
+      "dailyPct": 2.55,
+      "annualPct": 40.49
+    },
+    "volume": {
+      "mean": 0,
+      "p25": 0,
+      "p75": 0
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Dec",
+        "May",
+        "Mar"
+      ],
+      "weakMonths": [
+        "Oct",
+        "Jul",
+        "Apr"
+      ]
+    },
+    "gapFrequency": 0.17
+  },
+  "INTBREW": {
+    "ticker": "INTBREW",
+    "name": "INTBREW",
+    "board": "Main",
+    "from": "2012-02-28",
+    "to": "2026-02-02",
+    "totalBars": 3195,
+    "priceRange": {
+      "min": 2.75,
+      "max": 64,
+      "current": 13.95
+    },
+    "atr14": {
+      "mean": 3.87,
+      "p25": 0.21,
+      "p75": 5.61
+    },
+    "volatility": {
+      "dailyPct": 3.38,
+      "annualPct": 53.61
+    },
+    "volume": {
+      "mean": 1607770,
+      "p25": 110545,
+      "p75": 1535000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Dec",
+        "May",
+        "Oct"
+      ],
+      "weakMonths": [
+        "Nov",
+        "Feb",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0.24
+  },
+  "JAIZ": {
+    "ticker": "JAIZ",
+    "name": "JAIZ",
+    "board": "Main",
+    "from": "2017-02-12",
+    "to": "2026-02-02",
+    "totalBars": 2218,
+    "priceRange": {
+      "min": 0.34,
+      "max": 8.29,
+      "current": 7.62
+    },
+    "atr14": {
+      "mean": 0.08,
+      "p25": 0.03,
+      "p75": 0.11
+    },
+    "volatility": {
+      "dailyPct": 3.88,
+      "annualPct": 61.63
+    },
+    "volume": {
+      "mean": 7901746,
+      "p25": 832405,
+      "p75": 6210000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Dec",
+        "May"
+      ],
+      "weakMonths": [
+        "Apr",
+        "Jun",
+        "Mar"
+      ]
+    },
+    "gapFrequency": 0.1
+  },
+  "MTNN": {
+    "ticker": "MTNN",
+    "name": "MTN Nigeria",
+    "board": "Premium",
+    "from": "2019-05-16",
+    "to": "2026-02-02",
+    "totalBars": 1662,
+    "priceRange": {
+      "min": 90,
+      "max": 605,
+      "current": 572
+    },
+    "atr14": {
+      "mean": 7.66,
+      "p25": 2.91,
+      "p75": 7.5
+    },
+    "volatility": {
+      "dailyPct": 2.13,
+      "annualPct": 33.84
+    },
+    "volume": {
+      "mean": 2701329,
+      "p25": 549605,
+      "p75": 2610000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Nov",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.01
+  },
+  "NB": {
+    "ticker": "NB",
+    "name": "Nigerian Breweries",
+    "board": "Premium",
+    "from": "1996-01-01",
+    "to": "2016-03-01",
+    "totalBars": 5000,
+    "priceRange": {
+      "min": 0.08,
+      "max": 149.52,
+      "current": 81.6
+    },
+    "atr14": {
+      "mean": 7.7,
+      "p25": 0.6,
+      "p75": 3.81
+    },
+    "volatility": {
+      "dailyPct": 317.91,
+      "annualPct": 5046.62
+    },
+    "volume": {
+      "mean": 25812543,
+      "p25": 1630000,
+      "p75": 18205000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Apr",
+        "Mar",
+        "Feb"
+      ],
+      "weakMonths": [
+        "Sep",
+        "Jan",
+        "Jun"
+      ]
+    },
+    "gapFrequency": 0.46
+  },
+  "NESTLE": {
+    "ticker": "NESTLE",
+    "name": "Nestle Nigeria",
+    "board": "Premium",
+    "from": "2012-03-04",
+    "to": "2026-02-02",
+    "totalBars": 3238,
+    "priceRange": {
+      "min": 400,
+      "max": 2153.8,
+      "current": 2153.8
+    },
+    "atr14": {
+      "mean": 130.14,
+      "p25": 20.74,
+      "p75": 90.06
+    },
+    "volatility": {
+      "dailyPct": 2.03,
+      "annualPct": 32.2
+    },
+    "volume": {
+      "mean": 190568,
+      "p25": 24010,
+      "p75": 204780
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Dec",
+        "Jun"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Feb",
+        "Jan"
+      ]
+    },
+    "gapFrequency": 0.12
+  },
+  "OANDO": {
+    "ticker": "OANDO",
+    "name": "Oando",
+    "board": "Main",
+    "from": "2012-02-19",
+    "to": "2026-02-02",
+    "totalBars": 3442,
+    "priceRange": {
+      "min": 1.89,
+      "max": 95.5,
+      "current": 39.05
+    },
+    "atr14": {
+      "mean": 0.64,
+      "p25": 0.19,
+      "p75": 0.67
+    },
+    "volatility": {
+      "dailyPct": 3.92,
+      "annualPct": 62.19
+    },
+    "volume": {
+      "mean": 6001042,
+      "p25": 1540000,
+      "p75": 5840000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Dec",
+        "May",
+        "Aug"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Jan",
+        "Oct"
+      ]
+    },
+    "gapFrequency": 0.2
+  },
+  "OKOMUOIL": {
+    "ticker": "OKOMUOIL",
+    "name": "Okomu Oil Palm",
+    "board": "Premium",
+    "from": "2012-03-20",
+    "to": "2026-02-02",
+    "totalBars": 3199,
+    "priceRange": {
+      "min": 12.1,
+      "max": 1206.5,
+      "current": 1206.5
+    },
+    "atr14": {
+      "mean": 13.87,
+      "p25": 3.48,
+      "p75": 14.91
+    },
+    "volatility": {
+      "dailyPct": 2.55,
+      "annualPct": 40.56
+    },
+    "volume": {
+      "mean": 331243,
+      "p25": 34190,
+      "p75": 289730
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jun",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Oct",
+        "Aug",
+        "Nov"
+      ]
+    },
+    "gapFrequency": 0.2
+  },
+  "PRESCO": {
+    "ticker": "PRESCO",
+    "name": "Presco",
+    "board": "Premium",
+    "from": "2012-03-21",
+    "to": "2026-02-02",
+    "totalBars": 3219,
+    "priceRange": {
+      "min": 10,
+      "max": 1663,
+      "current": 1663
+    },
+    "atr14": {
+      "mean": 11.08,
+      "p25": 2.35,
+      "p75": 11.66
+    },
+    "volatility": {
+      "dailyPct": 2.63,
+      "annualPct": 41.68
+    },
+    "volume": {
+      "mean": 423782,
+      "p25": 32165,
+      "p75": 335128
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Jun",
+        "May"
+      ],
+      "weakMonths": [
+        "Nov",
+        "Mar",
+        "Sep"
+      ]
+    },
+    "gapFrequency": 0.2
+  },
+  "PZ": {
+    "ticker": "PZ",
+    "name": "PZ",
+    "board": "Main",
+    "from": "2016-03-03",
+    "to": "2026-03-02",
+    "totalBars": 2472,
+    "priceRange": {
+      "min": 3.75,
+      "max": 79,
+      "current": 79
+    },
+    "atr14": {
+      "mean": 0.31,
+      "p25": 0.09,
+      "p75": 0.4
+    },
+    "volatility": {
+      "dailyPct": 3.41,
+      "annualPct": 54.18
+    },
+    "volume": {
+      "mean": 0,
+      "p25": 0,
+      "p75": 0
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Feb",
+        "Dec",
+        "Jan"
+      ],
+      "weakMonths": [
+        "Oct",
+        "Apr",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0.28
+  },
+  "SEPLAT": {
+    "ticker": "SEPLAT",
+    "name": "Seplat Energy",
+    "board": "Premium",
+    "from": "2014-04-14",
+    "to": "2026-02-02",
+    "totalBars": 2884,
+    "priceRange": {
+      "min": 151.74,
+      "max": 6700,
+      "current": 6700
+    },
+    "atr14": {
+      "mean": 38.23,
+      "p25": 3.84,
+      "p75": 42.25
+    },
+    "volatility": {
+      "dailyPct": 2.29,
+      "annualPct": 36.41
+    },
+    "volume": {
+      "mean": 164798,
+      "p25": 4010,
+      "p75": 102240
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Feb",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Aug",
+        "Mar",
+        "Nov"
+      ]
+    },
+    "gapFrequency": 0.1
+  },
+  "STANBIC": {
+    "ticker": "STANBIC",
+    "name": "Stanbic IBTC Holdings",
+    "board": "Premium",
+    "from": "2012-02-19",
+    "to": "2026-02-02",
+    "totalBars": 3369,
+    "priceRange": {
+      "min": 10.54,
+      "max": 118,
+      "current": 118
+    },
+    "atr14": {
+      "mean": 3.33,
+      "p25": 0.64,
+      "p75": 3.52
+    },
+    "volatility": {
+      "dailyPct": 2.44,
+      "annualPct": 38.73
+    },
+    "volume": {
+      "mean": 2231733,
+      "p25": 171120,
+      "p75": 1600000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Sep",
+        "Jun",
+        "Apr"
+      ],
+      "weakMonths": [
+        "Oct",
+        "Feb",
+        "Nov"
+      ]
+    },
+    "gapFrequency": 0.15
+  },
+  "TOTAL": {
+    "ticker": "TOTAL",
+    "name": "TotalEnergies Nigeria",
+    "board": "Main",
+    "from": "2012-01-23",
+    "to": "2026-02-02",
+    "totalBars": 3086,
+    "priceRange": {
+      "min": 79.1,
+      "max": 745,
+      "current": 640
+    },
+    "atr14": {
+      "mean": 30.33,
+      "p25": 6.55,
+      "p75": 30.52
+    },
+    "volatility": {
+      "dailyPct": 2.3,
+      "annualPct": 36.56
+    },
+    "volume": {
+      "mean": 94901,
+      "p25": 12800,
+      "p75": 84463
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Oct",
+        "Jan"
+      ],
+      "weakMonths": [
+        "Feb",
+        "Nov",
+        "Apr"
+      ]
+    },
+    "gapFrequency": 0.19
+  },
+  "TRANSCORP": {
+    "ticker": "TRANSCORP",
+    "name": "Transcorp",
+    "board": "Main",
+    "from": "2012-03-05",
+    "to": "2026-02-02",
+    "totalBars": 3446,
+    "priceRange": {
+      "min": 0.47,
+      "max": 76.8,
+      "current": 46.3
+    },
+    "atr14": {
+      "mean": 0.42,
+      "p25": 0.04,
+      "p75": 0.21
+    },
+    "volatility": {
+      "dailyPct": 8.64,
+      "annualPct": 137.1
+    },
+    "volume": {
+      "mean": 21347913,
+      "p25": 4575000,
+      "p75": 20350000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Nov",
+        "Oct",
+        "Jan"
+      ],
+      "weakMonths": [
+        "Feb",
+        "Mar",
+        "Jul"
+      ]
+    },
+    "gapFrequency": 0.25
+  },
+  "UACN": {
+    "ticker": "UACN",
+    "name": "UACN",
+    "board": "Main",
+    "from": "2016-03-03",
+    "to": "2026-03-02",
+    "totalBars": 2472,
+    "priceRange": {
+      "min": 4.5,
+      "max": 105.95,
+      "current": 97
+    },
+    "atr14": {
+      "mean": 0.3,
+      "p25": 0.14,
+      "p75": 0.28
+    },
+    "volatility": {
+      "dailyPct": 3.19,
+      "annualPct": 50.62
+    },
+    "volume": {
+      "mean": 0,
+      "p25": 0,
+      "p75": 0
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jul",
+        "Oct",
+        "Sep"
+      ],
+      "weakMonths": [
+        "Apr",
+        "Feb",
+        "Aug"
+      ]
+    },
+    "gapFrequency": 0.31
+  },
+  "UBA": {
+    "ticker": "UBA",
+    "name": "UBA",
+    "board": "Premium",
+    "from": "2012-03-05",
+    "to": "2026-02-02",
+    "totalBars": 3441,
+    "priceRange": {
+      "min": 2.38,
+      "max": 50.46,
+      "current": 43
+    },
+    "atr14": {
+      "mean": 0.35,
+      "p25": 0.15,
+      "p75": 0.35
+    },
+    "volatility": {
+      "dailyPct": 2.82,
+      "annualPct": 44.72
+    },
+    "volume": {
+      "mean": 25494556,
+      "p25": 8697500,
+      "p75": 28042500
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Mar",
+        "Feb",
+        "Aug"
+      ]
+    },
+    "gapFrequency": 0.13
+  },
+  "UNILEVER": {
+    "ticker": "UNILEVER",
+    "name": "Unilever Nigeria",
+    "board": "Main",
+    "from": "2012-01-24",
+    "to": "2026-02-02",
+    "totalBars": 3278,
+    "priceRange": {
+      "min": 9.9,
+      "max": 80,
+      "current": 78
+    },
+    "atr14": {
+      "mean": 3.77,
+      "p25": 0.59,
+      "p75": 3.71
+    },
+    "volatility": {
+      "dailyPct": 2.85,
+      "annualPct": 45.25
+    },
+    "volume": {
+      "mean": 1167089,
+      "p25": 158280,
+      "p75": 892438
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Sep",
+        "Jun"
+      ],
+      "weakMonths": [
+        "Oct",
+        "Nov",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.19
+  },
+  "WAPCO": {
+    "ticker": "WAPCO",
+    "name": "Lafarge Africa",
+    "board": "Premium",
+    "from": "2012-01-19",
+    "to": "2026-02-02",
+    "totalBars": 3284,
+    "priceRange": {
+      "min": 8.95,
+      "max": 160,
+      "current": 157
+    },
+    "atr14": {
+      "mean": 2.63,
+      "p25": 0.67,
+      "p75": 3.43
+    },
+    "volatility": {
+      "dailyPct": 3.3,
+      "annualPct": 52.45
+    },
+    "volume": {
+      "mean": 2734278,
+      "p25": 502010,
+      "p75": 2917500
+    },
+    "seasonal": {
+      "strongMonths": [
+        "Jan",
+        "Jul",
+        "Jun"
+      ],
+      "weakMonths": [
+        "Aug",
+        "Mar",
+        "Feb"
+      ]
+    },
+    "gapFrequency": 0.19
+  },
+  "ZENITHBANK": {
+    "ticker": "ZENITHBANK",
+    "name": "Zenith Bank",
+    "board": "Premium",
+    "from": "2012-01-22",
+    "to": "2026-02-02",
+    "totalBars": 3473,
+    "priceRange": {
+      "min": 9,
+      "max": 76.9,
+      "current": 73.2
+    },
+    "atr14": {
+      "mean": 0.62,
+      "p25": 0.38,
+      "p75": 0.72
+    },
+    "volatility": {
+      "dailyPct": 2.38,
+      "annualPct": 37.71
+    },
+    "volume": {
+      "mean": 26085134,
+      "p25": 10177500,
+      "p75": 30550000
+    },
+    "seasonal": {
+      "strongMonths": [
+        "May",
+        "Jan",
+        "Dec"
+      ],
+      "weakMonths": [
+        "Feb",
+        "Mar",
+        "Aug"
+      ]
+    },
+    "gapFrequency": 0.08
+  }
+}

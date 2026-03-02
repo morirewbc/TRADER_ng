@@ -48,7 +48,7 @@ Three layers run after every code generation:
 - npm over pnpm — simpler for open source contributors
 - localStorage for settings — no database needed for BYOK
 - BM25 over vector embeddings — zero dependencies, fast enough for <1200 documents
-- investing.com HistoricalDataAjax endpoint for NGX OHLCV data (back to 1996 where available)
+- investing.com HistoricalDataAjax endpoint for NGX OHLCV data (full H/L/V, back to listing date). Accessed via Firecrawl (fc-b38e308d921e4b2eaa875b8eb3cc9446) — Firecrawl renders the page in a browser (bypasses Cloudflare), then executeJavascript calls HistoricalDataAjax from within that session.
 - Per-ticker ATR14/volatility/volume profiles stored as BM25 RAG chunks for realistic strategy generation
 - get_ngx_historical tool gives AI precise bar data + stats during generation for backtesting-aware parameter suggestions
 - Tool calling loop (recursive do-while) handles get_ngx_news, get_opec_news, get_ngx_historical for both Anthropic and OpenAI paths
@@ -99,8 +99,8 @@ src/
     ai/
       reviewer.ts         — AI code review + auto-correction
 scripts/
-  discover-ngx-pairs.ts   — Scrapes investing.com to build NGX ticker → pair_id map
-  fetch-historical.ts     — Batch-fetches OHLCV bars via HistoricalDataAjax endpoint
+  discover-ngx-pairs.ts   — Firecrawl-based: renders ng.investing.com pages to extract pair_id per ticker
+  fetch-historical.ts     — Firecrawl-based: executeJavascript calls HistoricalDataAjax in-browser for full OHLCV
   process-historical.ts   — Computes per-ticker stats + appends historical chunks to BM25 index
 data/
   raw/historical/         — Raw OHLCV JSON per ticker (gitignored). pair-ids.json committed.
