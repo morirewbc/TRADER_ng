@@ -1,0 +1,15 @@
+2026-02-28: Generated workflows for 14 available skills inside .gemini/skills. Output placed into TRADER/.agent/workflows/.
+2026-02-28: Used the first-principles-decomposer skill to read the codebase and generate FIRST_PRINCIPLES_README.md and README.md for the NGX Trading Engine.
+2026-02-28: Pivoted from the MCP architecture to a Native Server-Side API architecture based on codebase discovery of existing NGX RSS loaders. Drafted a new `implementation_plan.md`.
+2026-02-28: Implemented the Native Live Data APIs. Extracted NGX/OPEC RSS logic to `src/lib/data/live.ts` and embedded recursive tool calling in `src/app/api/chat/route.ts` for Anthropic and OpenAI.
+2026-02-28: Verified that the Generative Language API (`/v1beta/openai/`) natively supports these tools, meaning Gemini API keys work out-of-the-box.
+2026-02-28: Appended Nairametrics RSS feed to the `NGX_RSS_FEEDS` list.
+2026-02-28: Drafted `implementation_plan.md` outlining a Next.js Webhook architecture for Telegram Bot integration (based on OpenClaw inspiration).
+2026-03-01: Applied Premium UI/UX upgrades: implemented Framer Motion layout animations (`MessageList.tsx`, `page.tsx`), added Glassmorphism (`ChatInput.tsx`), built a premium pill for `StreamingIndicator.tsx`, lazy-loaded the CodeMirror editor bundle, and introduced radial gradients (`globals.css`).
+2026-03-01: Repaired missing dependencies (`npm install`) and booted the Next.js dev server for manual verification. All Code actions up to this point are synced.
+2026-03-01: Added native support for Groq and OpenRouter to the TRADER app. Updated settings UI and security validation.
+2026-03-01: Documented Groq, OpenRouter, Live Data SSE tools, and Premium UI in UPDATED README.md.
+2026-03-01: Replaced the static model button grid in OnboardingGate.tsx with a Framer Motion searchable Combobox dropdown (supports large model lists with search, animation, and click-outside-to-close).
+2026-03-01: Built /api/models/route.ts for dynamic model fetching from all providers. OnboardingGate now loads full model lists live after API key entry (debounced 800ms), with hardcoded fallback.
+2026-03-01: Security hardening — switched /api/models from GET to POST so API keys travel in the request body, never appearing in server logs, browser history, or proxy logs.
+2026-03-01: Browser-validated the full OnboardingGate → Chat → SSE pipeline. Confirmed error sanitization works correctly (fake API key produces clean "Provider request failed" message with no key leakage).

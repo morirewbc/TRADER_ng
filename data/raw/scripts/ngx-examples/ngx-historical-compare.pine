@@ -1,0 +1,93 @@
+//@version=6
+indicator("NGX Historical Price Comparison", overlay=false)
+
+// ─── Inputs ───────────────────────────────────────────────────────────────────
+ticker      = input.string("NGX:DANGCEM", title="NGX Ticker",
+     tooltip="Use NGX: prefix, e.g. NGX:MTNN, NGX:ZENITHBANK")
+benchmarkTk = input.string("NGX:NGSEINDEX", title="Benchmark Index")
+
+devThreshold = input.float(10.0, title="Deviation Alert Threshold (%)", minval=1.0, step=1.0)
+showBands    = input.bool(true,  title="Show ±1 StdDev Bands")
+showBenchmark = input.bool(true, title="Show Benchmark Comparison")
+
+// ─── Fetch Data ───────────────────────────────────────────────────────────────
+stockClose = request.security(ticker,      timeframe.period, close)
+benchClose = request.security(benchmarkTk, timeframe.period, close)
+
+// ─── Historical Reference Levels ──────────────────────────────────────────────
+// Annual metrics (~252 trading days)
+yearSMA   = ta.sma(stockClose, 252)
+yearStd   = ta.stdev(stockClose, 252)
+yearHigh  = ta.highest(stockClose, 252)
+yearLow   = ta.lowest(stockClose, 252)
+
+// Shorter-term references
+monthSMA  = ta.sma(stockClose, 22)
+weekSMA   = ta.sma(stockClose, 5)
+
+// Bollinger-style bands around annual SMA
+upperBand = yearSMA + yearStd
+lowerBand = yearSMA - yearStd
+
+// ─── Relative Strength vs Benchmark ──────────────────────────────────────────
+// Base both series at 100 from 252 bars ago for fair comparison
+stockBase = stockClose[252]
+benchBase = benchClose[252]
+
+relStock = na(stockBase) or stockBase == 0 ? na : stockClose / stockBase * 100
+relBench = na(benchBase) or benchBase == 0 ? na : benchClose / benchBase * 100
+
+// Outperformance vs index
+outperformance = na(relBench) ? na : relStock - relBench
+
+// ─── Deviation from Annual SMA ────────────────────────────────────────────────
+deviation = na(yearSMA) or yearSMA == 0 ? na : (stockClose - yearSMA) / yearSMA * 100
+
+isAboveThreshold = not na(deviation) and deviation >  devThreshold
+isBelowThreshold = not na(deviation) and deviation < -devThreshold
+
+// ─── Plots ────────────────────────────────────────────────────────────────────
+// Primary: rebased price and benchmark for comparison
+plot(relStock, title=str.replace(ticker, "NGX:", "") + " (rebased 100)",
+     color=color.new(color.blue, 0), linewidth=2)
+
+plot(showBenchmark ? relBench : na, title="Benchmark (rebased 100)",
+     color=color.new(color.gray, 40), linewidth=1, style=plot.style_line)
+
+hline(100, "Base Level", color=color.new(color.gray, 60), linestyle=hline.style_dashed)
+
+// Outperformance fill
+relBenchPlot = plot(showBenchmark ? relBench : na, display=display.none)
+relStockPlot = plot(relStock, display=display.none)
+fill(relStockPlot, relBenchPlot,
+     color = outperformance >= 0 ? color.new(color.green, 85) : color.new(color.red, 85),
+     title="Outperformance Fill")
+
+// Deviation from annual average (secondary pane concept — shown as label)
+bgcolor(isAboveThreshold ? color.new(color.green, 92) :
+        isBelowThreshold ? color.new(color.red,   92) : na,
+        title="Deviation Zone")
+
+// ─── Key Level Labels (last bar only) ────────────────────────────────────────
+if barstate.islast
+    devStr  = str.tostring(deviation, "+#.##;-#.##") + "%"
+    outStr  = str.tostring(outperformance, "+#.##;-#.##") + "%"
+    sym     = str.replace(ticker, "NGX:", "")
+
+    labelTxt = sym + "\n" +
+         "Price:   ₦" + str.tostring(stockClose, "#,###.##") + "\n" +
+         "52W H:   ₦" + str.tostring(yearHigh,   "#,###.##") + "\n" +
+         "52W L:   ₦" + str.tostring(yearLow,    "#,###.##") + "\n" +
+         "vs Avg:  " + devStr + "\n" +
+         "vs Idx:  " + outStr
+
+    label.new(bar_index, relStock,
+         text=labelTxt, style=label.style_label_left,
+         color=color.new(color.navy, 20),
+         textcolor=color.white, size=size.small)
+
+// ─── Alerts ───────────────────────────────────────────────────────────────────
+alertcondition(isAboveThreshold, title="NGX: Price Extended Above Average",
+     message="Price is " + str.tostring(devThreshold) + "%+ above 1-year average — possible mean reversion risk")
+alertcondition(isBelowThreshold, title="NGX: Price Extended Below Average",
+     message="Price is " + str.tostring(devThreshold) + "%+ below 1-year average — potential value zone")

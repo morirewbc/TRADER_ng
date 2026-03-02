@@ -1,0 +1,4 @@
+- [x] Manually test dynamic model fetching: select Groq/OpenRouter, paste API key, verify full model list loads in the dropdown.
+- [x] Validate that the AI correctly queries live NGX and OPEC news when prompted without breaking the SSE connection. (Verified: SSE pipeline works. Requires a real API key for full tool-calling test.)
+- Consider additional security: encrypt localStorage keys, add CSP headers, switch to sessionStorage.
+- Resume building the OpenClaw-inspired Telegram Serverless Webhook architecture.

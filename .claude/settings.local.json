@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /Users/albatross/TRADER/src/lib/rag/*.ts)",
+      "Bash(npm run build-rag)",
+      "Bash(wc -l /Users/albatross/TRADER/data/pinescript-docs/*.json)",
+      "Bash(npm run build-ngx)",
+      "Bash(npm run build)",
+      "Bash(npx next build)",
+      "Bash(git -C /Users/albatross/TRADER stash list)",
+      "Bash(git -C /Users/albatross/TRADER log --all --oneline)",
+      "Bash(du -sh \"/Users/albatross/Downloads/pinescript-ai-main 2/data/pinescript-docs/\"*)",
+      "Bash(node -e \":*)",
+      "WebFetch(domain:afx.kwayisi.org)",
+      "WebFetch(domain:ngxgroup.com)",
+      "WebFetch(domain:doclib.ngxgroup.com)"
+    ]
+  }
+}

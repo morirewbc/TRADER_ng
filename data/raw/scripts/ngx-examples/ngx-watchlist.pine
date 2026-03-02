@@ -1,0 +1,78 @@
+//@version=6
+indicator("NGX Stock Watchlist", overlay=true, max_tables_count=1)
+
+// ─── Inputs ───────────────────────────────────────────────────────────────────
+ticker1 = input.string("NGX:DANGCEM",   title="Ticker 1", tooltip="NGX: prefixed symbol")
+ticker2 = input.string("NGX:MTNN",      title="Ticker 2")
+ticker3 = input.string("NGX:ZENITHBANK",title="Ticker 3")
+ticker4 = input.string("NGX:GTCO",      title="Ticker 4")
+ticker5 = input.string("NGX:ACCESS",    title="Ticker 5")
+
+tablePos = input.string("Top Right", title="Table Position",
+     options=["Top Right", "Top Left", "Bottom Right", "Bottom Left"])
+
+// ─── Fetch data ───────────────────────────────────────────────────────────────
+c1 = request.security(ticker1, timeframe.period, close)
+c2 = request.security(ticker2, timeframe.period, close)
+c3 = request.security(ticker3, timeframe.period, close)
+c4 = request.security(ticker4, timeframe.period, close)
+c5 = request.security(ticker5, timeframe.period, close)
+
+p1 = request.security(ticker1, timeframe.period, close[1])
+p2 = request.security(ticker2, timeframe.period, close[1])
+p3 = request.security(ticker3, timeframe.period, close[1])
+p4 = request.security(ticker4, timeframe.period, close[1])
+p5 = request.security(ticker5, timeframe.period, close[1])
+
+v1 = request.security(ticker1, timeframe.period, volume)
+v2 = request.security(ticker2, timeframe.period, volume)
+v3 = request.security(ticker3, timeframe.period, volume)
+v4 = request.security(ticker4, timeframe.period, volume)
+v5 = request.security(ticker5, timeframe.period, volume)
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+pctChange(curr, prev) =>
+    na(prev) or prev == 0 ? 0.0 : (curr - prev) / prev * 100
+
+changeColor(pct) =>
+    pct > 0 ? color.new(color.green, 20) : pct < 0 ? color.new(color.red, 20) : color.gray
+
+chg1 = pctChange(c1, p1)
+chg2 = pctChange(c2, p2)
+chg3 = pctChange(c3, p3)
+chg4 = pctChange(c4, p4)
+chg5 = pctChange(c5, p5)
+
+// ─── Build table ─────────────────────────────────────────────────────────────
+pos = tablePos == "Top Right"    ? position.top_right    :
+      tablePos == "Top Left"     ? position.top_left     :
+      tablePos == "Bottom Right" ? position.bottom_right : position.bottom_left
+
+var table t = table.new(pos, 4, 7, bgcolor=color.new(color.black, 15),
+     border_width=1, border_color=color.new(color.gray, 60),
+     frame_width=1,  frame_color=color.new(color.gray, 40))
+
+// Header row
+if barstate.islast
+    table.cell(t, 0, 0, "Symbol",   text_color=color.silver, text_size=size.small, bgcolor=color.new(color.gray, 70))
+    table.cell(t, 1, 0, "Price ₦",  text_color=color.silver, text_size=size.small, bgcolor=color.new(color.gray, 70))
+    table.cell(t, 2, 0, "Change %", text_color=color.silver, text_size=size.small, bgcolor=color.new(color.gray, 70))
+    table.cell(t, 3, 0, "Volume",   text_color=color.silver, text_size=size.small, bgcolor=color.new(color.gray, 70))
+
+    // Data rows
+    tickers = array.from(ticker1, ticker2, ticker3, ticker4, ticker5)
+    closes  = array.from(c1, c2, c3, c4, c5)
+    changes = array.from(chg1, chg2, chg3, chg4, chg5)
+    volumes = array.from(v1, v2, v3, v4, v5)
+
+    for i = 0 to 4
+        sym = str.replace(array.get(tickers, i), "NGX:", "")
+        cls = array.get(closes, i)
+        chg = array.get(changes, i)
+        vol = array.get(volumes, i)
+        cc  = changeColor(chg)
+
+        table.cell(t, 0, i + 1, sym,                                 text_color=color.white,  text_size=size.small)
+        table.cell(t, 1, i + 1, str.tostring(cls, "#,###.##"),       text_color=color.white,  text_size=size.small)
+        table.cell(t, 2, i + 1, str.tostring(chg, "+#.##;-#.##") + "%", text_color=cc,        text_size=size.small, bgcolor=color.new(cc, 85))
+        table.cell(t, 3, i + 1, str.tostring(vol / 1000, "#,###") + "K", text_color=color.silver, text_size=size.small)
