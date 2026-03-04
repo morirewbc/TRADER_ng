@@ -2,3 +2,7 @@ data/raw/historical/*.json
 !data/raw/historical/pair-ids.json
 node_modules/
 .next/
+__MACOSX/
+._*
+.DS_Store
+tsconfig.tsbuildinfo
