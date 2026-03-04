@@ -1,87 +1,102 @@
-# Contributing to PineScript AI
+# Contributing to TRADER_ng
 
-## Getting Started
+Thanks for your interest in contributing.
+
+## Contribution Model
+
+This repository is maintainer-owned upstream (`morirewbc/TRADER_ng`).  
+External contributors should:
+
+1. Fork the repository
+2. Push changes to their fork
+3. Open a Pull Request (PR) back to `morirewbc/TRADER_ng:main`
+
+Direct pushes to upstream are not part of the public contribution workflow.
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+
+### Local setup
 
 ```bash
-git clone https://github.com/arturoabreuhd/pinescript-ai.git
-cd pinescript-ai
+git clone https://github.com/<your-github-username>/TRADER_ng.git
+cd TRADER_ng
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You'll need to configure a provider (Anthropic, OpenAI, Google, or Ollama) in the browser to test generation.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Project Structure
+## Fork + PR Workflow
 
-| Directory | Purpose |
-|---|---|
-| `src/app/chat/` | Main chat page with split-panel layout (chat + code editor) |
-| `src/app/settings/` | Provider and model configuration |
-| `src/app/api/chat/` | Streaming SSE endpoint — generation + validation pipeline |
-| `src/app/api/fix/` | Auto-correction endpoint |
-| `src/components/chat/` | Message list, user/assistant messages, chat input, streaming indicator |
-| `src/components/editor/` | CodeMirror editor, validation panel, PineScript language mode |
-| `src/hooks/` | `useChat` — all chat state via useReducer |
-| `src/lib/rag/` | BM25 search engine for RAG retrieval |
-| `src/lib/validator/` | Static validation (regex-based rule engine) |
-| `src/lib/validator/rules/` | Individual rule files: structure, deprecated, v6-specific, limits |
-| `src/lib/ai/` | AI code reviewer + auto-correction (LLM calls) |
-| `scripts/` | RAG data processor (`process-docs.ts`) |
-| `data/pinescript-docs/` | Processed RAG data (committed) |
-| `data/raw/` | Source documentation and scripts (gitignored) |
+1. Fork this repo on GitHub.
+2. Clone your fork locally.
+3. Create a branch from `main`:
 
-## How the RAG Works
-
-The RAG system uses BM25 full-text search with no external dependencies.
-
-**Build time** (`npm run build-rag`):
-1. Reads Markdown docs from `data/raw/docs/` — splits into ~800-token chunks
-2. Extracts function signatures from `data/raw/docs/reference/functions/*.md`
-3. Indexes `.pine` scripts from `data/raw/scripts/` — extracts title, version, functions used
-4. Builds a BM25 inverted index over all documents
-5. Writes 4 JSON files to `data/pinescript-docs/`
-
-**Runtime** (every generation request):
-1. Tokenizes the user's message
-2. Scores against BM25 index (function-mention boosting applied)
-3. Returns top matches: 5 function refs + 3 doc chunks + 2 example scripts
-4. Results injected into the system prompt (~3–4K tokens)
-
-See the [README](README.md#customize-your-knowledge-base) for details on adding your own data.
-
-## Adding Validation Rules
-
-Static validation rules live in `src/lib/validator/rules/`. Each file exports an array of rule objects:
-
-```typescript
-interface Rule {
-  id: string;
-  check: (code: string, version: "v5" | "v6") => ValidationResult | null;
-}
+```bash
+git checkout -b feat/short-description
 ```
 
-To add a new rule:
+4. Make your changes.
+5. Run required checks (see below).
+6. Commit with a clear message.
+7. Push to your fork.
+8. Open a PR from your fork branch into `morirewbc/TRADER_ng:main`.
 
-1. Pick the appropriate file (`structure.ts`, `deprecated.ts`, `v6-specific.ts`, or `limits.ts`) — or create a new one
-2. Add a rule object with a unique `id` and a `check` function
-3. Return `null` if the rule passes, or a `ValidationResult` with status, message, and optional line number
-4. If you created a new file, import and spread it in `src/lib/validator/index.ts`
+## Required Checks Before Opening a PR
 
-Rules run synchronously and should be fast — no LLM calls, no async. The AI reviewer handles anything that needs deeper analysis.
+Run these from the repository root:
 
-## Code Style
+```bash
+npm run lint
+npm run build
+```
 
-- TypeScript with strict mode
-- Tailwind CSS for all styling — no CSS modules, no styled-components
-- Functional components with hooks
-- No component library (shadcn, MUI, etc.) — all UI built directly with Tailwind
+If your changes touch data ingestion or RAG indexing, run the relevant script(s) too:
 
-Run `npm run lint` before submitting.
+- `npm run build-rag` for PineScript docs/scripts ingestion
+- `npm run build-ngx` for NGX-focused docs ingestion
+- `npm run discover-ngx-pairs`, `npm run fetch-historical`, `npm run build-historical` for NGX historical data pipeline changes
 
-## Pull Request Process
+## What Not to Commit
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Make your changes
-4. Run `npm run build` to verify no type errors
-5. Open a PR with a clear description of what changed and why
+Do not commit generated or local artifacts such as:
+
+- `node_modules/`
+- `.next/`
+- `__MACOSX/`
+- `.DS_Store`
+- `tsconfig.tsbuildinfo`
+- local API keys, secrets, or machine-specific files
+
+Also avoid committing large raw dumps in `data/raw/historical/` unless explicitly required and discussed.
+
+## Project Map (Where to Change What)
+
+- `src/app/` — app routes and API endpoints (`/api/chat`, `/api/fix`, `/api/validate`, `/api/ngx/*`)
+- `src/components/` — UI components (chat, editor, NGX views, layout)
+- `src/hooks/` — client-side state/data hooks
+- `src/lib/` — core logic (RAG, validator, AI review, data adapters, security)
+- `scripts/` — ingestion/processing scripts for docs and NGX datasets
+- `data/` — processed datasets and raw inputs
+
+## PR Expectations
+
+Please include in your PR:
+
+- What changed
+- Why it changed
+- How you verified it (`lint/build` output and any extra checks)
+- Screenshots or short clips for UI changes
+- Any follow-up work or limitations
+
+Keep PRs focused and reasonably small. Large multi-purpose PRs are harder to review and may be asked to split.
+
+## Review and Merge
+
+Maintainers may request changes before merge.  
+PRs that are out of scope, unreviewable, or fail checks may be closed.
