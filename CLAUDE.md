@@ -1,7 +1,8 @@
-# PineScript AI by Clear Terminal
+# PineScript AI by plastiQ (layered on Clear Terminal's work)
 
 ## Project Overview
-Open-source, self-hosted PineScript code generator. Chat + code editor with real streaming from Anthropic, OpenAI, or Ollama. BYOK (Bring Your Own Key). Includes RAG-powered generation, static validation, and AI code review.
+Open-source, code generator with RAG-powered generation (with deep NGX Context)
+. Chat + code editor with real streaming from Anthropic, OpenAI, Gemini or Ollama. BYOK (Bring Your Own OpenRouter Key). Includes RAG-powered generation, static validation, Nigerian/NGX Content, Nigerian Business News Dashboard, and AI code review.
 
 ## Stack
 - Next.js 16 (App Router, TypeScript strict)
